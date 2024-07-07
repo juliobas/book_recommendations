@@ -81,8 +81,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'book_recommendations',
         'USER': 'root',
-        'PASSWORD': '123',
-        'HOST': 'db',
+        'PASSWORD': '371908',
+        'HOST': 'localhost', #Esto se cambia una vez tengamos definido donde va a estar la base de datos
         'PORT': '3306',
     }
 }
