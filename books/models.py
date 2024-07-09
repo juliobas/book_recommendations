@@ -14,3 +14,32 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+class BookRead(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)    
+
+    def __str__(self):
+        return self.book.title
+
+class BookLike(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)    
+
+    def __str__(self):
+        return self.book.title
+
+class BookDislike(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)    
+
+    def __str__(self):
+        return self.book.title
+
+class BookRating(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)    
+    rating = models.IntegerField()
+
+    def __str__(self):
+        return self.book.title + " - " + str(self.rating)
