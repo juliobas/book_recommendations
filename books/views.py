@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import Book
@@ -8,6 +8,7 @@ from .load_books import load_books
 
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = BookSerializer
 
     def list(self, request, *args, **kwargs):
@@ -20,6 +21,7 @@ class BookListView(generics.ListAPIView):
 
 class UserProfileView(generics.RetrieveAPIView):
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -27,6 +29,7 @@ class UserProfileView(generics.RetrieveAPIView):
 
 class UserUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_object(self):
