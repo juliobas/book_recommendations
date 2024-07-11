@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, BookRead
+from .models import Book, BookRead, BookLike
 from django.contrib.auth.models import User
 
 class BookSerializer(serializers.ModelSerializer):
@@ -16,4 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
 class BookReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRead
+        fields = ['book', 'user']
+
+class BookLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookLike
         fields = ['book', 'user']

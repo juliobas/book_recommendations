@@ -2,8 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import Book, BookRead
-from .serializers import BookSerializer, UserSerializer, BookReadSerializer
+from .models import Book, BookRead, BookLike
+from .serializers import BookSerializer, UserSerializer, BookReadSerializer, BookLikeSerializer
 from utils.ResponseUtil import ResponseUtil
 from .load_books import load_books
 
@@ -54,3 +54,22 @@ class UserBookReadList(generics.ListAPIView):
                 
         serializer = BookSerializer(books, many=True)
         return Response(ResponseUtil.success("Books Read Lists", serializer.data))
+
+class BookLikeCreate(generics.CreateAPIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['user'] = request.user.id
+        serializer = BookLikeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(ResponseUtil.success("Book Like Created", serializer.data))
+        return Response(ResponseUtil.error("Error", serializer.errors))
+
+class BookLikeList(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, id=request.user.id)
+        books_like_ids = BookLike.objects.filter(user=user).values_list('book_id', flat=True)
+        books = Book.objects.filter(id__in=books_like_ids)
+
+        serializer = BookSerializer(books, many=True)
+        return Response(ResponseUtil.success("Books Like Lists", serializer.data))
