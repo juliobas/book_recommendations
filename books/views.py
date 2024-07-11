@@ -37,6 +37,8 @@ class UserUpdateView(generics.UpdateAPIView):
         return self.request.user
 
 class BookReadCreate(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         data['user'] = request.user.id
@@ -47,6 +49,8 @@ class BookReadCreate(generics.CreateAPIView):
         return Response(ResponseUtil.error("Error", serializer.errors))
 
 class UserBookReadList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=request.user.id)
         books_read_ids = BookRead.objects.filter(user=user).values_list('book_id', flat=True)
@@ -56,6 +60,8 @@ class UserBookReadList(generics.ListAPIView):
         return Response(ResponseUtil.success("Books Read Lists", serializer.data))
 
 class BookLikeCreate(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
         data['user'] = request.user.id
@@ -66,6 +72,8 @@ class BookLikeCreate(generics.CreateAPIView):
         return Response(ResponseUtil.error("Error", serializer.errors))
 
 class BookLikeList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=request.user.id)
         books_like_ids = BookLike.objects.filter(user=user).values_list('book_id', flat=True)
