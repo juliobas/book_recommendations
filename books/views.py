@@ -6,6 +6,7 @@ from .models import Book, BookRead, BookLike, BookRating, BookDislike
 from .serializers import BookSerializer, UserSerializer, BookReadSerializer, BookLikeSerializer, BookDislikeSerializer, BookRatingSerializer
 from utils.ResponseUtil import ResponseUtil
 from .load_books import load_books
+from .recommend_books import recommend_books
 
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
@@ -16,8 +17,9 @@ class BookListView(generics.ListAPIView):
         books = self.get_queryset()
         if books.count() == 0:
             load_books()
-            books = Book.objects.all()
-        serializer = self.get_serializer(books, many=True)
+
+        recommended_books = recommend_books(request.user)
+        serializer = self.get_serializer(recommended_books, many=True)
         return Response(ResponseUtil.success("Books Lists", serializer.data))
 
 class UserProfileView(generics.RetrieveAPIView):
