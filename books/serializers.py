@@ -3,6 +3,8 @@ from .models import Book, BookRead, BookLike, BookDislike, BookRating
 from django.contrib.auth.models import User
 
 class BookSerializer(serializers.ModelSerializer):
+    average_rating = serializers.FloatField(read_only=True)
+    
     class Meta:
         model = Book
         fields = '__all__'

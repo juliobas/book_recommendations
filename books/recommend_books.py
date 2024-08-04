@@ -1,5 +1,6 @@
 from .models import Book, BookRead, BookLike, BookRating, BookDislike
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Q, Value, FloatField
+from django.db.models.functions import Coalesce
 from .load_books import load_books
 import json
 from django.db.models.expressions import RawSQL
@@ -35,8 +36,9 @@ def recommend_books(user):
         authors, categories, read_books, liked_books = get_user_preferences(user)
 
         if not authors and not categories and not read_books and not liked_books:
-            recommended_books = Book.objects.all().order_by('?')[:15]
+            recommended_books = Book.objects.all().annotate(average_rating=Coalesce(Avg('bookrating__rating'), Value(0), output_field=FloatField())).order_by('-average_rating')[:15]
         else:
+            print("Entre al algoritmo")
             conditions = []
             for category in categories:
                 condition = f"JSON_CONTAINS(categories, '{json.dumps(category)}', '$')"
@@ -50,12 +52,13 @@ def recommend_books(user):
                 conditions.append(condition)
             
             author_final_condition = ' OR '.join(conditions)
-
+          
             recommended_books = Book.objects.exclude(id__in=read_books).exclude(id__in=liked_books).annotate(
                 author_match=RawSQL(author_final_condition, ()),
-                categories_match=RawSQL(category_final_condition, ())
-            ).filter(Q(author_match=True) | Q(categories_match=True))
-            
+                categories_match=RawSQL(category_final_condition, ()),
+                average_rating=Coalesce(Avg('bookrating__rating'), Value(0), output_field=FloatField())
+            ).filter(Q(author_match=True) | Q(categories_match=True)).order_by('-average_rating')[:15]
+
         if recommended_books.count() > 0 or num_executions > 2:
             break
         else:
